@@ -1,0 +1,69 @@
+Q. Given a sorted array of integers say arr[] and a number x. Write a recursive program using divide and conquer strategy to check if there exist two elements in the array whose sum = x. If there exist such two elements then return the numbers, otherwise print as “No”.
+
+Note: Write a Divide and Conquer Solution
+Input Format:
+   First Line Contains Integer n – Size of array
+   Next n lines Contains n numbers – Elements of an array
+   Last Line Contains Integer x – Sum Value
+
+Output Format:
+   First Line Contains Integer – Element1
+   Second Line Contains Integer – Element2 (Element 1 and Elements 2 together sums to value “x”)
+
+CODE:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int binarySearchRange(int* arr, int low, int high, int target) {
+    if (low > high) return -1;
+    int mid = low + (high - low) / 2;
+    if (arr[mid] == target) return mid;
+    if (arr[mid] > target) return binarySearchRange(arr, low, mid - 1, target);
+    return binarySearchRange(arr, mid + 1, high, target);
+}
+
+int findPairDC(int* arr, int low, int high, int x, int* e1, int* e2) {
+    if (low >= high) return 0;
+    
+    int mid = low + (high - low) / 2;
+    
+    if (findPairDC(arr, low, mid, x, e1, e2)) return 1;
+    
+    if (findPairDC(arr, mid + 1, high, x, e1, e2)) return 1;
+    
+    for (int i = low; i <= mid; i++) {
+        int target = x - arr[i];
+        int idx = binarySearchRange(arr, mid + 1, high, target);
+        if (idx != -1) {
+            *e1 = arr[i];
+            *e2 = arr[idx];
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1) return 0;
+    
+    int* arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    
+    int x;
+    scanf("%d", &x);
+    
+    int e1, e2;
+    if (findPairDC(arr, 0, n - 1, x, &e1, &e2)) {
+        printf("%d\n%d\n", e1, e2);
+    } else {
+        printf("No\n");
+    }
+    
+    free(arr);
+    return 0;
+}
